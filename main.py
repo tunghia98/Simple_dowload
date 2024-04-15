@@ -37,7 +37,7 @@ def is_valid_url(url):
 
 # Tạo giao diện người dùng
 root = tk.Tk()
-root.title("Tải video YouTube hoặc Facebook")
+root.title("Tải video YouTube")
 
 # Khung nhập URL video
 url_frame = tk.Frame(root)
