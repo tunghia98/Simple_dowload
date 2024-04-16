@@ -3,6 +3,7 @@ import customtkinter as ctk
 from tkinter import filedialog
 from pytube import YouTube
 import os
+import tkinter as tk
 # Hàm tải video
 def download_video():
     # Lấy URL video từ trường nhập liệu
@@ -14,7 +15,7 @@ def download_video():
     if save_dir=="":
         save_dir="downloads"
     # Tải video xuống
-    progress_label.grid(row=4, column=1, sticky="ew")
+    progress_label.grid(row=5, column=0, sticky="ew")
     progress_bar.grid(row=5,column=1)
     try:
         yt = YouTube(url,on_progress_callback=on_progress)
@@ -47,13 +48,17 @@ def find_url():
         status_label.configure(text="URL không hợp lệ", text_color="red")
         return
     else:
-        yt = YouTube(url)
-        status_label.configure(text=yt.title, text_color="green")
-        ress = [i.resolution for i in yt.streams if i.resolution]
-        ress = list(set(ress))
-        ress.sort()
-        quality_combobox.config(values=ress)
-        return
+        try:
+            yt = YouTube(url)
+            status_label.configure(text=yt.title, text_color="green")
+            ress = [i.resolution for i in yt.streams if i.resolution]
+            ress = list(set(ress))
+            ress.sort()
+            quality_combobox.config(values=ress)
+            return
+        except Exception as e:
+        # Hiển thị thông báo lỗi
+            status_label.configure(text=f"{e}",text_color="red")
 
 
 # Tạo giao diện người dùng
@@ -61,7 +66,7 @@ root = ctk.CTk()
 ctk.set_default_color_theme("blue")
 ctk.set_appearance_mode("System")
 # Tạo title
-root.title("Tải video YouTube")
+root.title("Phần mềm Tải video YouTube")
 # Giới hạn cho giao diện
 root.geometry("720x480")
 root.minsize(720,480)
@@ -79,10 +84,13 @@ content_frame.grid_rowconfigure(3, weight=1)
 content_frame.grid_rowconfigure(4, weight=1)
 content_frame.grid_rowconfigure(5, weight=1)  
 # Khung nhập URL video
+title_label=ctk.CTkLabel(content_frame,text="Tải video Yotube",font=("Arial", 24, "bold"))
 url_label = ctk.CTkLabel(content_frame, text="Nhập link youtube:")
 url_entry = ctk.CTkEntry(content_frame,width = 400 , height = 40)
 # Nút tìm kiếm
-find_button = ctk.CTkButton(content_frame,text="Tìm kiếm",command=find_url)
+find_icon = tk.PhotoImage(file="icon/image.png")
+find_icon.__sizeof__
+find_button = ctk.CTkButton(content_frame,command=find_url,image=find_icon,text="",height = 40,width=40)
 
 # Khung lựa chọn chất lượng và thư mục lưu
 quality_label = ctk.CTkLabel(content_frame, text="Chất lượng video:")
@@ -98,17 +106,18 @@ save_dir_entry = ctk.CTkEntry(content_frame, textvariable=selected_save_dir, wid
 def select_save_dir():
     selected_save_dir.set(filedialog.askdirectory())
 save_dir_button = ctk.CTkButton(content_frame, text="Chọn thư mục", command=select_save_dir)
-url_label.grid(row=0, column=0, sticky="w")
-url_entry.grid(row=0, column=1, sticky="ew")
-find_button.grid(row=0, column=2, sticky="w")
-quality_label.grid(row=1, column=0, sticky="w")
-quality_combobox.grid(row=1, column=1, sticky="ew")
-save_dir_label.grid(row=2, column=0, sticky="w")
-save_dir_entry.grid(row=2, column=1, sticky="ew")
-save_dir_button.grid(row=2, column=2, sticky="w")
+title_label.grid(row=0,column=1,sticky="ew")
+url_label.grid(row=1, column=0, sticky="w")
+url_entry.grid(row=1, column=1, sticky="ew")
+find_button.grid(row=1, column=2, sticky="ew")
+quality_label.grid(row=2, column=0, sticky="w")
+quality_combobox.grid(row=2, column=1, sticky="ew")
+save_dir_label.grid(row=3, column=0, sticky="w")
+save_dir_entry.grid(row=3, column=1, sticky="ew")
+save_dir_button.grid(row=3, column=2, sticky="w")
 # Nút tải xuống
 download_button = ctk.CTkButton(content_frame, text="Tải xuống", command=download_video)
-download_button.grid(row=3,column=1)
+download_button.grid(row=4,column=1)
 # # Hiện thị thông tin download
 progress_label = ctk.CTkLabel(content_frame, text="0%")
 progress_bar = ctk.CTkProgressBar(content_frame,width=400)
